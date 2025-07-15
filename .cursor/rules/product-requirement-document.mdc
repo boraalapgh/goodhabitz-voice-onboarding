@@ -1,0 +1,230 @@
+---
+alwaysApply: true
+---
+GoodHabitz Conversational Onboarding · Prototype v0.5
+
+1 · Purpose
+Create a modern, colourful onboarding chat (primary purple #7B5BFF) where a newly-invited employee can switch freely between Text and Voice. Both modes are powered by the OpenAI Agents SDK:
+
+Text mode → standard Agent instance.
+
+Voice mode → RealtimeAgent + RealtimeSession, which streams mic audio to OpenAI’s speech-to-speech model and plays the answer back automatically (no separate TTS route) 
+openai.github.io
+openai.github.io
+.
+
+A single shared messages[] history guarantees that context persists when the user toggles between modes 
+openai.github.io
+openai.github.io
+.
+
+2 · Success Metrics (MVP)
+Goal	KPI	Target
+Complete chat	% invitees finishing all Q’s	≥ 70 %
+Time-to-first click	Median seconds CTA → content click	≤ 90 s
+Profile data captured	Users with all 4 pref fields	≥ 80 %
+Talent-Scan uptake	Click “Take Talent Scan”	≥ 40 %
+
+3 · User Journey
+Email invite → Activate my account → /welcome?token=xyz.
+
+AI welcomes user using seeded data (name, role, company goal).
+
+Four preference questions (buttons + typing/voice).
+
+CourseBar updates after each answer via filterCourses tool.
+
+User taps Finish → AI offers Talent Scan CTA.
+
+Redirect to personalised Dashboard or Talent Scan page.
+
+4 · Functional Requirements
+ID	Requirement
+FR-01	Prefill user/company fields from Supabase (seeded; no auth).
+FR-02	Four onboarding Q’s with quick-select + free input.
+FR-03	Voice ↔ Text Toggle beside Send.
+• Text → textAgent.
+• Voice → voiceAgent (RealtimeSession, auto waveform, transcript hidden unless CC). Switching keeps messages[] intact.
+FR-04	Voice answers and AI replies stream through the SDK’s built-in audio; no extra /api/tts 
+openai.github.io
+openai.github.io
+.
+FR-05	CourseBar shows ≤ 3 cards filtered by filterCourses; clicking opens overlay.
+FR-06	React Context stores messages[] + prefs; same array passed to both agents for every run.
+FR-07	Agents live in agentic/agents/onboardingAgent.ts; tools in agentic/tools/. filterCourses executed by both agents 
+openai.github.io
+.
+FR-08	Mode-switch latency < 500 ms; single shared context.
+FR-09	Responsive (desktop ≥ 1024 px, mobile ≥ 375 px), WCAG AA colours.
+FR-10	STT blobs deleted post-transcription; SDK handles playback, nothing stored.
+
+5 · Non-Functional Requirements
+Deployment (Vercel): Edge Function /api/chat (text); Node Function /api/transcribe (Whisper) 
+openai.github.io
+.
+
+Latency (P99): text ≤ 2 s; voice (STT + LLM stream + playback) ≤ 3 s.
+
+GDPR-light: demo PII only.
+
+Event logging: Supabase event_logs.
+
+Styling rules in §9.
+
+6 · Tech Stack
+Layer	Choice	Rationale
+Frontend	Next.js App Router · Tailwind · shadcn/ui	Vercel-native
+Animations	Framer Motion	Waveform & fades
+State	React Context + useReducer	Shared memory
+STT	Whisper API	Reliable STT
+Voice I/O	Voice Agent SDK stream	Combines STT & playback 
+openai.github.io
+Text AI	createOpenAIAgent()	Rich text logic 
+openai.github.io
+Tools	filterCourses	Shared by both agents
+DB	Supabase (no Auth)	Simple SQL
+Hosting	Vercel	Zero-ops
+
+7 · Data Model (Supabase)
+Table	Key Columns
+companies	id · name “Acme Healthcare” · industry “Medical Tech” · learning_goal
+users	id · company_id · first_name “Jamie” · last_name “Doe” · email · role
+courses	id · title · type · skills (text[]) · duration · description
+event_logs	id · user_id · event · payload · created_at
+
+(Seed: 1 company, 1 user, 20 items per content table).
+
+8 · Risks & Open Questions
+Voice model availability/cost.
+
+EU latency over WebRTC transport 
+openai.github.io
+.
+
+Potential need for multi-company demo.
+
+Mobile STT in noisy settings.
+
+9 · Styling Guidelines
+Primary: #7B5BFF; Accents: teal 400, coral 400, lemon 300.
+
+Font: Inter; Corners: rounded-2xl; Shadow: shadow-md; Padding: p-4 / p-6.
+
+Waveform: gradient purple 600 → teal 400.
+
+Buttons: bg-purple-600 hover:bg-purple-700 focus:ring-2 focus:ring-teal-400.
+
+Course cards: white with 4 px left border tinted by first skill.GoodHabitz Conversational Onboarding · Prototype v0.5
+
+1 · Purpose
+Create a modern, colourful onboarding chat (primary purple #7B5BFF) where a newly-invited employee can switch freely between Text and Voice. Both modes are powered by the OpenAI Agents SDK:
+
+Text mode → standard Agent instance.
+
+Voice mode → RealtimeAgent + RealtimeSession, which streams mic audio to OpenAI’s speech-to-speech model and plays the answer back automatically (no separate TTS route) 
+openai.github.io
+openai.github.io
+.
+
+A single shared messages[] history guarantees that context persists when the user toggles between modes 
+openai.github.io
+openai.github.io
+.
+
+2 · Success Metrics (MVP)
+Goal	KPI	Target
+Complete chat	% invitees finishing all Q’s	≥ 70 %
+Time-to-first click	Median seconds CTA → content click	≤ 90 s
+Profile data captured	Users with all 4 pref fields	≥ 80 %
+Talent-Scan uptake	Click “Take Talent Scan”	≥ 40 %
+
+3 · User Journey
+Email invite → Activate my account → /welcome?token=xyz.
+
+AI welcomes user using seeded data (name, role, company goal).
+
+Four preference questions (buttons + typing/voice).
+
+CourseBar updates after each answer via filterCourses tool.
+
+User taps Finish → AI offers Talent Scan CTA.
+
+Redirect to personalised Dashboard or Talent Scan page.
+
+4 · Functional Requirements
+ID	Requirement
+FR-01	Prefill user/company fields from Supabase (seeded; no auth).
+FR-02	Four onboarding Q’s with quick-select + free input.
+FR-03	Voice ↔ Text Toggle beside Send.
+• Text → textAgent.
+• Voice → voiceAgent (RealtimeSession, auto waveform, transcript hidden unless CC). Switching keeps messages[] intact.
+FR-04	Voice answers and AI replies stream through the SDK’s built-in audio; no extra /api/tts 
+openai.github.io
+openai.github.io
+.
+FR-05	CourseBar shows ≤ 3 cards filtered by filterCourses; clicking opens overlay.
+FR-06	React Context stores messages[] + prefs; same array passed to both agents for every run.
+FR-07	Agents live in agentic/agents/onboardingAgent.ts; tools in agentic/tools/. filterCourses executed by both agents 
+openai.github.io
+.
+FR-08	Mode-switch latency < 500 ms; single shared context.
+FR-09	Responsive (desktop ≥ 1024 px, mobile ≥ 375 px), WCAG AA colours.
+FR-10	STT blobs deleted post-transcription; SDK handles playback, nothing stored.
+
+5 · Non-Functional Requirements
+Deployment (Vercel): Edge Function /api/chat (text); Node Function /api/transcribe (Whisper) 
+openai.github.io
+.
+
+Latency (P99): text ≤ 2 s; voice (STT + LLM stream + playback) ≤ 3 s.
+
+GDPR-light: demo PII only.
+
+Event logging: Supabase event_logs.
+
+Styling rules in §9.
+
+6 · Tech Stack
+Layer	Choice	Rationale
+Frontend	Next.js App Router · Tailwind · shadcn/ui	Vercel-native
+Animations	Framer Motion	Waveform & fades
+State	React Context + useReducer	Shared memory
+STT	Whisper API	Reliable STT
+Voice I/O	Voice Agent SDK stream	Combines STT & playback 
+openai.github.io
+Text AI	createOpenAIAgent()	Rich text logic 
+openai.github.io
+Tools	filterCourses	Shared by both agents
+DB	Supabase (no Auth)	Simple SQL
+Hosting	Vercel	Zero-ops
+
+7 · Data Model (Supabase)
+Table	Key Columns
+companies	id · name “Acme Healthcare” · industry “Medical Tech” · learning_goal
+users	id · company_id · first_name “Jamie” · last_name “Doe” · email · role
+courses	id · title · type · skills (text[]) · duration · description
+event_logs	id · user_id · event · payload · created_at
+
+(Seed: 1 company, 1 user, 20 items per content table).
+
+8 · Risks & Open Questions
+Voice model availability/cost.
+
+EU latency over WebRTC transport 
+openai.github.io
+.
+
+Potential need for multi-company demo.
+
+Mobile STT in noisy settings.
+
+9 · Styling Guidelines
+Primary: #7B5BFF; Accents: teal 400, coral 400, lemon 300.
+
+Font: Inter; Corners: rounded-2xl; Shadow: shadow-md; Padding: p-4 / p-6.
+
+Waveform: gradient purple 600 → teal 400.
+
+Buttons: bg-purple-600 hover:bg-purple-700 focus:ring-2 focus:ring-teal-400.
+
+Course cards: white with 4 px left border tinted by first skill.

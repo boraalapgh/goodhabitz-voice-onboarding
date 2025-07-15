@@ -1,0 +1,19 @@
+{"mcpServers": {
+    "Figma": {
+      "url": "http://127.0.0.1:3845/sse"
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "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"
+      }
+    },
+   "supabase": {
+    "command": "@supabase/mcp-server-supabase",
+    "args": ["--read-only", "--project-ref=xkslelbfufajolnpkybs"],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "sbp_88770e2efb992ce5fe4773bfc10340f9717c2784"
+      }
+    }
+  }}

@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(env)",
+      "Bash(claude --mcp-list)",
+      "Bash(npx:*)",
+      "mcp__ide__executeCode",
+      "Bash(claude --list-tools)",
+      "Bash(python3:*)",
+      "Bash(claude-code --help)",
+      "WebFetch(domain:www.kibo-ui.com)",
+      "Bash(npm run build:*)",
+      "Bash(npm run lint)",
+      "Bash(npm run dev:*)",
+      "Bash(pkill:*)"
+    ],
+    "deny": []
+  }
+}

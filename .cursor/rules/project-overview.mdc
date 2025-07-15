@@ -1,0 +1,66 @@
+---
+alwaysApply: true
+---
+## Expectations for Cursor
+
+1. **Scaffold Agents & Tools**  
+   * Place `textAgent` and creation helper for `voiceAgent` under `agentic/agents/`.  
+   * Place `filterCourses` in `agentic/tools/`.  
+   * Ensure both agents import and use the same `messages[]` context.
+
+2. **Voice Toggle Logic**  
+   * Lazy-import `RealtimeSession`.  
+   * `enableVoice()` → start/ resume session (mic + playback).  
+   * `disableVoice()` → pause session, keep context.  
+
+3. **Waveform & Captions**  
+   * Waveform shows while mic active or AI speaking.  
+   * Add **CC** toggle to reveal/hide transcript.
+
+4. **API Endpoints**  
+   * Edge `/api/chat` streams text agent responses.  
+   * Node `/api/transcribe` calls Whisper.  
+   * ✖ No `/api/tts` – voice playback handled by SDK pipeline.  
+
+5. **Styling**  
+   * Use Tailwind palette & component rules defined in PRD §9.  
+
+6. **Quality Gates**  
+   * ESLint + Prettier clean, TS strict.  
+   * Lighthouse accessibility ≥ 90.  
+   * Mode toggle latency < 500 ms.
+
+---
+
+## Key Env Vars
+
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+OPENAI_API_KEY
+
+---
+
+## Definition of Done
+* User completes onboarding in text **or** voice; switching retains context.  
+* CourseBar refreshes via `filterCourses` tool.  
+* Voice agent streams audio automatically.  
+* Code builds (`pnpm build`) with zero TypeScript errors.
+
+---
+
+> **Hey Cursor** – follow this rule set, the PRD, and the SDK docs ❗
+Sources
+Voice agent quick-start 
+openai.github.io
+ · Overview of voice agents 
+openai.github.io
+ · Default WebRTC transport auto-plays audio 
+openai.github.io
+ · Tool sharing/how-to 
+openai.github.io
+ · RealtimeSession class details 
+openai.github.io
+ · Agents SDK quick-start (standard agent) 
+openai.github.io
+ · Transport layer options 
+openai.github.io
